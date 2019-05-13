@@ -6,11 +6,15 @@ import com.telegrembot.english.parser.MessageBuilder;
 public class App {
 
     public static void main(String[] args) {
-        MessageBuilder.getInstance().build(Language.ENGLISH).forEach((message)->{
 
-            System.out.println("******************************************");
-            System.out.println(message);
-        });
+        MessageBuilder.
+                getInstance().
+                build(Language.ENGLISH).
+                forEach((message)->{
+                    System.out.println("******************************************");
+                    System.out.println(message);
+                    });
+
         System.out.println("******************************************");
     }
 }

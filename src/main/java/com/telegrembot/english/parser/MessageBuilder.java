@@ -9,7 +9,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,10 +21,6 @@ public class MessageBuilder {
     private static final String CONTEXT_URL_BUILDER = "https://context.reverso.net/translation/%s/%s";
     private static final String ENGLISH_CONTEXT = "english-russian";
     private static final String ITALIAN_CONTEXT = "italian-russian";
-
-    // в регулярном выражении точка означает любой символ. но если хочешь чтоб это была точка ставь слеш. но у джава слеш это спец символ
-    // так что ставим еще один чтоб его юзать
-    private static final String REG_EXP = "[!^\\w]\\.\\s";
 
     //переменная INSTANCE которая хранит в себе объект(экземряр класса) типа MessageBuilder
     private static MessageBuilder INSTANCE;
@@ -62,6 +57,10 @@ public class MessageBuilder {
         }
 
         for(String word: words){
+            //String.format - удобная штука
+            //можно хранить строку и внутри нее оставлять место для переменных(значений) %s
+            //в String.format мы передаем эту строку с местами для переменных и через зяпятую передаем все эти значения что нам нужны
+            //к примеру String.format("in the %s or at the %s", "middle", "end") = 'in the middle or at the end'
             String[] contextData = getContextData(String.format(CONTEXT_URL_BUILDER, contextType, word));
             MessageBody currentWord = new MessageBody(word, contextData[0], contextData[1], contextData[2]);
             message.add(currentWord);
@@ -72,7 +71,7 @@ public class MessageBuilder {
     //публичний(обшедоступный) статический метод (значит не требует объект класса чтоб его вызвать)
     //который проверяет создан ли INSTANCE. Создает если нужно и возвращает.
     //не принимает параметры
-    //возвращает тип MessageBuilder
+    //возвращает объеет типа MessageBuilder
     public static MessageBuilder getInstance(){
         if(INSTANCE == null){
             INSTANCE = new MessageBuilder();
@@ -96,10 +95,12 @@ public class MessageBuilder {
 
     //метод который должен работать по аналогии с 'getEnglishRandomWords' но возвращать итальянские слова
     private List<String> getItalianRandomWords(){
-        return new ArrayList<>();
+        return new ArrayList<>();//сейчас просто возвращает новый пустой лист.
     }
 
 
+    //данный метод просто инстанциирует и возвращает обьект типа WebDriver
+    //чтоб все работало нужно поместить chromedriver.exe в папку main/resources/
     private static WebDriver getWebDriver(){
         MessageBuilder.class.getResource("chromedriver.exe");
         String path = "src/main/resources/chromedriver.exe";
@@ -124,8 +125,9 @@ public class MessageBuilder {
             Element fullContext = doc.getElementsByClass("example").get(0);
 
             //так как fullContext содержит оба языка. нужно строку разделить.
-            //для этого исползуем метод split и он разбивает строку по параметру который мы передаем и вернет массив
-            //нам иеально подходит ". "
+            //для этого смотрим на елемент fullContext в браузере(class = 'example')
+            //и находим внутри него обьекти для перевода и оригинала
+            //ищем различия в локаторах и сохраняем в соответствуюшие переменные
             String context = fullContext.select(".src").text();
             String contextTranslation = fullContext.select(".trg").text();
             return new String[] {translation, context, contextTranslation};
