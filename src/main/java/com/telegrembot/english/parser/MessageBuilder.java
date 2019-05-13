@@ -62,8 +62,10 @@ public class MessageBuilder {
             //в String.format мы передаем эту строку с местами для переменных и через зяпятую передаем все эти значения что нам нужны
             //к примеру String.format("in the %s or at the %s", "middle", "end") = 'in the middle or at the end'
             String[] contextData = getContextData(String.format(CONTEXT_URL_BUILDER, contextType, word));
-            MessageBody currentWord = new MessageBody(word, contextData[0], contextData[1], contextData[2]);
-            message.add(currentWord);
+            if(contextData!=null){
+                MessageBody currentWord = new MessageBody(word, contextData[0], contextData[1], contextData[2]);
+                message.add(currentWord);
+            }
         }
         return message;
     }
@@ -132,7 +134,8 @@ public class MessageBuilder {
             String contextTranslation = fullContext.select(".trg").text();
             return new String[] {translation, context, contextTranslation};
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Что-то пошло не так.\nНе удается подключится к %s", url));
+            System.out.println(String.format("Что-то пошло не так.\nНе удается подключится к %s. \nДанное слово не будет отображено в результатах", url));
+            return null;
         }
     }
 
